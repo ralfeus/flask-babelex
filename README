@@ -1,5 +1,8 @@
 Flask-BabelEx
 
+*DEPRECATION WARNING*
+All Flask-BabelEx features were merged into Flask-Babel package and this package should no longer be used.
+
 Implements i18n and l10n support for Flask.  This is fork of the official Flask-Babel
 extension with additional features:
 
