@@ -17,7 +17,6 @@ if os.environ.get('LC_CTYPE', '').lower() == 'utf-8':
     os.environ['LC_CTYPE'] = 'en_US.utf-8'
 
 from datetime import datetime
-from flask import _request_ctx_stack
 from babel import dates, numbers, support, Locale
 from babel.support import NullTranslations
 from werkzeug.datastructures import ImmutableDict
@@ -205,7 +204,7 @@ def get_locale():
     a request. If flask-babel was not attached to the Flask application,
     will return 'en' locale.
     """
-    ctx = _request_ctx_stack.top
+    ctx = g
     if ctx is None:
         return None
 
@@ -236,7 +235,7 @@ def get_timezone():
     a request. If flask-babel was not attached to application, will
     return UTC timezone object.
     """
-    ctx = _request_ctx_stack.top
+    ctx = g
     tzinfo = getattr(ctx, 'babel_tzinfo', None)
 
     if tzinfo is None:
@@ -275,7 +274,7 @@ def refresh():
     Without that refresh, the :func:`~flask.flash` function would probably
     return English text and a now German page.
     """
-    ctx = _request_ctx_stack.top
+    ctx = g
     for key in 'babel_locale', 'babel_tzinfo':
         if hasattr(ctx, key):
             delattr(ctx, key)
@@ -285,7 +284,7 @@ def _get_format(key, format):
     """A small helper for the datetime formatting functions.  Looks up
     format defaults for different kinds.
     """
-    babel = _request_ctx_stack.top.app.extensions.get('babel')
+    babel = g.app.extensions.get('babel')
 
     if babel is not None:
         formats = babel.date_formats
@@ -481,7 +480,7 @@ class Domain(object):
 
     def as_default(self):
         """Set this domain as default for the current request"""
-        ctx = _request_ctx_stack.top
+        ctx = g
         if ctx is None:
             raise RuntimeError("No request context")
 
@@ -503,7 +502,7 @@ class Domain(object):
         object if used outside of the request or if a translation cannot be
         found.
         """
-        ctx = _request_ctx_stack.top
+        ctx = g
         if ctx is None:
             return NullTranslations()
 
@@ -603,7 +602,7 @@ def get_domain():
     This will return the default domain (e.g. "messages" in <approot>/translations")
     if none is set for this request.
     """
-    ctx = _request_ctx_stack.top
+    ctx = g
     if ctx is None:
         return domain
 
